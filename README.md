@@ -10,8 +10,7 @@ run efficiently and reproducibly at scale.
 
 ## 1) High‑Level Proposed Structure for Training Inputs
 
-Each **row** in the final dataset corresponds to a **single impression slot** (i.e. one
-item shown to one customer on a day `dt`). For a batch of `N` exploded impressions,
+Each **row** in the final dataset corresponds to a **single impression slot**. For a batch of `N` exploded impressions,
 we produce the following tensors and context features:
 
 ### Tensors (for the model)
@@ -124,7 +123,7 @@ The implementation aims to be **shuffle‑aware**, **memory‑efficient**, and *
 
 2. **Early Projections & Predicate Pushdown**
    - Select only necessary columns as early as possible.
-   - Apply `event_ts` window filters **before** any expensive join/groupBy to reduce shuffle size.
+   - Apply `action_time` window filters **before** any expensive join/groupBy to reduce shuffle size.
 
 3. **Skew & Partitioning**
    - Repartition by **`customer_id`** when unioning actions to keep per‑customer operations local.
@@ -157,25 +156,26 @@ The implementation aims to be **shuffle‑aware**, **memory‑efficient**, and *
 ## 6) Repository Layout
 
 ```
-.
-├── src/
-│   └── utils/
-│       ├── utils.py
-│       ├── schemas.py       
-|   ├── __init__.py
-│   ├── pipeline.py          # build_training_inputs(...) - SPEC 1000
-├── tests/
-│   ├── conftest.py
-│   ├── test_pipeline_contract.py
-│   ├── test_history_logic.py
-│   ├── test_lookback_and_limits.py
-│   ├── test_impressions_and_labels.py
-│   ├── test_edge_cases.py
-|   ├── test_history_build.py
-│   ├── test_pipeline_end_to_end.py
+├── .gitignore
+├── LICENSE
+├── README.md
 ├── pyproject.toml
-├── pytest.ini 
-└── README.md            
+├── pytest.ini
+├── src
+    ├── __init__.py
+    ├── pipeline.py
+    └── utils
+    │   ├── schemas.py
+    │   └── utils.py
+└── tests
+    ├── conftest.py
+    ├── test_edge_cases.py
+    ├── test_history_build.py
+    ├── test_history_logic.py
+    ├── test_impressions_and_labels.py
+    ├── test_lookback_and_limits.py
+    ├── test_pipeline_contract.py
+    └── test_pipeline_end_to_end.py         
 ```
 
 ---
